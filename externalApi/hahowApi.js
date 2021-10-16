@@ -71,6 +71,20 @@ class HahowApi extends BaseApi {
   }
 
   /**
+   * Authenticate - 驗證使用者身分
+   * @param {string} name 使用者名稱
+   * @param {string} password 使用者密碼
+   * @returns {Promise<void> | never} 當驗證失敗時，Throw error / 成功時，甚麼都不回傳
+   */
+  async Authenticate (name, password) {
+    if (!name || typeof (name) !== 'string') throw new Error('name 不為 string');
+    if (!password || typeof (password) !== 'string') throw new Error('password 不為 string');
+    const response = await this.post('/auth', { name, password });
+    if (response.status === 401) throw new ApiError('unauthorized', 'Unauthorized', 401);
+    if (response.status !== 200) throw new Error('Authenticate 回傳status不為 200');
+  }
+
+  /**
    * @typedef ResponseType
    * @type {object}
    * @property {number} status 呼叫API，得到的status
@@ -91,6 +105,23 @@ class HahowApi extends BaseApi {
       return this.get(path, params, retryCnt - 1);
     }
 
+    return response;
+  }
+
+  /**
+   * 呼叫API (POST)
+   * @param {string} path 呼叫API的path
+   * @param {Object} data Request Body
+   * @param {number} retryCnt 當出現 "Backend Error"時，剩餘重試次數 (default: 5)
+   * @returns {Promise<ResponseType> | never} 呼叫API後，回傳的status及data
+   */
+  async post (path, data, retryCnt = 5) {
+    const response = await this.callApi('post', path, null, data);
+    if (response.data?.code === 1000) {
+      // 當出現 "Backend Error" 時，若還有retryCnt則重試
+      if (retryCnt <= 0) throw new Error('Backend Error');
+      return this.post(path, data, retryCnt - 1);
+    }
     return response;
   }
 }
