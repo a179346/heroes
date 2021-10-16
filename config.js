@@ -4,6 +4,10 @@ const env = {
   LOG_ERROR_STACK: process.env.LOG_ERROR_STACK || '0',
   // Server listen port
   PORT: process.env.PORT || '3100',
+  // Hahow api url
+  HAHOW_API_URL: process.env.HAHOW_API_URL || 'https://hahow-recruit.herokuapp.com',
+  // Hahow api timeout (ms)
+  HAHOW_API_TIMEOUT: parseInt(process.env.HAHOW_API_TIMEOUT, 10) || 10000,
 };
 Object.freeze(env);
 
