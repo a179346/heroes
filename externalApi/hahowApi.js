@@ -32,10 +32,10 @@ class HahowApi {
    * @returns {Promise<Hero> | never} 英雄
    */
   async SingleHero (heroId, retryCnt = 5) {
-    if (typeof (heroId) !== 'string') throw new Error('heroId 不為 string');
+    if (!heroId || typeof (heroId) !== 'string') throw new Error('heroId 不為 string');
     const response = await this.get('/heroes/' + heroId);
     if (response.status === 404) throw new ApiError('not_found', 'Not Found', 404);
-    if (response.status !== 200) throw new Error('ListHeroes 回傳status不為 200');
+    if (response.status !== 200) throw new Error('SingleHero 回傳status不為 200');
     if (!response.data) throw new Error('SingleHero 沒有回傳資料');
     if (response.data.code === 1000) {
       // 當出現 "Backend Error" 時，若還有retryCnt則重試
@@ -55,6 +55,35 @@ class HahowApi {
     const response = await this.get('/heroes');
     if (response.status !== 200) throw new Error('ListHeroes 回傳status不為 200');
     if (!Array.isArray(response.data) || response.data.some((v) => !v || typeof (v.id) !== 'string')) throw new Error('ListHeroes 回傳資料格式錯誤');
+
+    return response.data;
+  }
+
+  /**
+   * @typedef HeroProfile
+   * @type {object}
+   * @property {number} str 力量屬性值
+   * @property {number} int 智力屬性值
+   * @property {number} agi 敏捷屬性值
+   * @property {number} luk 幸運屬性值
+   */
+  /**
+   * Profile of Hero - 取得英雄檔案
+   * @param {string} heroId 欲查詢英雄id
+   * @param {number} retryCnt 當出現 "Backend Error"時，剩餘重試次數 (default: 5)
+   * @returns {Promise<HeroProfile> | never} 英雄檔案
+   */
+  async ProfileOfHero (heroId, retryCnt = 5) {
+    if (!heroId || typeof (heroId) !== 'string') throw new Error('heroId 不為 string');
+    const response = await this.get('/heroes/' + heroId + '/profile');
+    if (response.status === 404) throw new ApiError('not_found', 'Not Found', 404);
+    if (response.status !== 200) throw new Error('ProfileOfHero 回傳status不為 200');
+    if (!response.data) throw new Error('ProfileOfHero 沒有回傳資料');
+    if (response.data.code === 1000) {
+      // 當出現 "Backend Error" 時，若還有retryCnt則重試
+      if (retryCnt <= 0) throw new Error('ProfileOfHero Backend Error');
+      return this.ProfileOfHero(heroId, retryCnt - 1);
+    }
 
     return response.data;
   }
