@@ -5,7 +5,7 @@ const chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 
-const HahowApi = require('../../externalApi/HahowApi');
+const HahowApi = require('../../externalApi/hahowApi');
 const { ApiError } = require('../../lib/ApiError');
 
 const mockHahowApiUrl = 'http://HahowApiUrl.test';
