@@ -4,7 +4,7 @@
   "description": "heroes api server",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --exit ./test/**/*.test.js",
+    "test": "mocha --exit ./test/index.test.js ./test/**/*.test.js",
     "lint": "eslint .",
     "dev": "nodemon index.js"
   },
