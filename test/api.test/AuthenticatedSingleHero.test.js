@@ -276,7 +276,6 @@ describe('API測試 - AuthenticatedSingleHero (GET /heroes/:heroId)', () => {
       expect(response.body?.code).to.equal('internal_server_error', '回傳 code 應為 "internal_server_error"');
     });
 
-
     it('Profile delay 500 ms => 應回傳 500', async () => {
       const mockAuthResponse = 'OK';
       const mockProfileResponse = { 'str':2, 'int':7, 'agi':9, 'luk':7 };
