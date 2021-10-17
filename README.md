@@ -21,22 +21,38 @@
 ---
 
 ## 💻 該如何跑起這個 server
-### Requirements
-- node >= v14 (因為有用到 optional chaining，Node版本須至少14)
 
-### Steps -
-#### 1. Install dependencies 
-```
-npm install
-```
-#### 2. 啟動專案
-```
-npm start
-```
-or
-```
-npm run dev
-```
+### 方法一、 node 啟動
+> ### Requirements
+> - node >= v14 (因為有用到 optional chaining，Node版本須 > 14)
+> 
+> ### Steps -
+> #### 1. Install dependencies 
+> ```
+> npm install
+> ```
+> #### 2. 啟動專案
+> ```
+> npm start
+> ```
+> or
+> ```
+> npm run dev
+> ```
+
+### 方法二、 docker 啟動
+> ### Requirements
+> - docker
+> 
+> ### Steps -
+> #### 1. Build Docker Image
+> ```
+> docker build -t heroes-api .
+> ```
+> #### 2. 啟動專案
+> ```
+> docker run -p 3100:3100 heroes-api
+> ```
 
 ---
 
