@@ -38,6 +38,27 @@ describe('Unit test - HahowApi.ListHeroes', () => {
       expect(data).to.deep.equal(mockResponse, 'hahowApi.ListHeroes 成功時回傳data應與mockResponse相同');
     });
 
+    it('Backend Error 5 次後成功 => 應成功', async () => {
+      const mockBackendErrorResponse = { 'code':1000, 'message':'Backend error' };
+      const mockResponse = [ { 'id':'1', 'name':'Daredevil', 'image':'http://i.annihil.us/u/prod/marvel/i/mg/6/90/537ba6d49472b/standard_xlarge.jpg' }, { 'id':'2', 'name':'Thor', 'image':'http://x.annihil.us/u/prod/marvel/i/mg/5/a0/537bc7036ab02/standard_xlarge.jpg' }, { 'id':'3', 'name':'Iron Man', 'image':'http://i.annihil.us/u/prod/marvel/i/mg/6/a0/55b6a25e654e6/standard_xlarge.jpg' } ];
+      nock(mockHahowApiUrl)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockResponse);
+
+      const data = await hahowApi.ListHeroes();
+      expect(data).to.deep.equal(mockResponse, 'hahowApi.ListHeroes 成功時回傳data應與mockResponse相同');
+    });
+
     it('delay 30 ms => 應成功回傳英雄Array', async () => {
       const mockResponse = [ { 'id':'1', 'name':'Daredevil', 'image':'http://i.annihil.us/u/prod/marvel/i/mg/6/90/537ba6d49472b/standard_xlarge.jpg' }, { 'id':'2', 'name':'Thor', 'image':'http://x.annihil.us/u/prod/marvel/i/mg/5/a0/537bc7036ab02/standard_xlarge.jpg' }, { 'id':'3', 'name':'Iron Man', 'image':'http://i.annihil.us/u/prod/marvel/i/mg/6/a0/55b6a25e654e6/standard_xlarge.jpg' } ];
       nock(mockHahowApiUrl)
@@ -62,9 +83,22 @@ describe('Unit test - HahowApi.ListHeroes', () => {
         .and.be.not.an.instanceOf(ApiError);
     });
 
-    it('Backend Error => 應Throw Error', async () => {
-      const mockResponse = { 'code':1000, 'message':'Backend error' };
+    it('Backend Error 6 次後成功 (重試次數設為5) => 應Throw Error', async () => {
+      const mockBackendErrorResponse = { 'code':1000, 'message':'Backend error' };
+      const mockResponse = [ { 'id':'1', 'name':'Daredevil', 'image':'http://i.annihil.us/u/prod/marvel/i/mg/6/90/537ba6d49472b/standard_xlarge.jpg' }, { 'id':'2', 'name':'Thor', 'image':'http://x.annihil.us/u/prod/marvel/i/mg/5/a0/537bc7036ab02/standard_xlarge.jpg' }, { 'id':'3', 'name':'Iron Man', 'image':'http://i.annihil.us/u/prod/marvel/i/mg/6/a0/55b6a25e654e6/standard_xlarge.jpg' } ];
       nock(mockHahowApiUrl)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
+        .get('/heroes')
+        .reply(200, mockBackendErrorResponse)
         .get('/heroes')
         .reply(200, mockResponse);
 

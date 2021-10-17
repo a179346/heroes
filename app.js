@@ -3,6 +3,7 @@ const express = require('express');
 const { env } = require('./config');
 const { ApiError, DEFAULT_CODE, DEFAULT_MESSAGE, DEFAULT_STATUS } = require('./lib/ApiError');
 const ApiResponse = require('./lib/ApiResponse');
+const heroesRouter = require('./routes/heroesRouter');
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.get('/ping', (req, res) => {
 // body-parser 因為沒有需要傳入Request Body的API，註解掉 (若有需要可以打開)
 // app.use(express.urlencoded({ extended: false }));
 // app.use(express.json());
+
+app.use('/heroes', heroesRouter);
 
 
 // 成功訊息統一在這邊回覆 (可以在這邊加log系統，紀錄"request","response"及"呼叫外部API的log")
