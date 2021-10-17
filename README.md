@@ -42,6 +42,26 @@ npm run dev
 
 ## 📚 專案架構
 
+> `client` -> `api server(此專案)` -> `https://hahow-recruit.herokuapp.com`
+
+### 檔案結構
+- 📁 .github - 讓github action自動跑測試 (當push上main時)
+- 📁 externalApi - 串接外部API層
+  - 📄 hahowApi.js - 在這邊串接`https://hahow-recruit.herokuapp.com`
+- 📁 lib - 存放其他專案可共用的資料結構或function
+  - 📄 ApiError.js - 錯誤結構 (根據這個回傳錯誤給client)
+  - 📄 ApiResponse.js - 成功回傳結構 (根據這個的內容回傳給client)
+- 📁 middlewares - express的middlewares
+  - 📄 authUser.js - 驗證使用者身分middleware
+  - 📄 getHahowApi.js - 把 HahowApi 放到 req 的 middleware
+- 📁 routes - api server的各個router
+- 📁 test - 測試程式
+  - 📁 api.test - 測試各個routes，呼叫回傳的結果
+  - 📁 unit.test - 針對單一function測試 (這專案主要測試`hahowApi.js`)
+- 📄 app.js - express server的routes指向、統一回傳client的地方
+- 📄 config.js - 專案的config (在這專案中，只有環境變數)
+- 📄 index.js - 程式的進入點 (在這邊讓server開始listen)
+
 ---
 
 ## 👪 第三方 library
