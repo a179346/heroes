@@ -26,6 +26,7 @@ class HahowApi extends BaseApi {
    */
   async SingleHero (heroId) {
     if (!heroId || typeof (heroId) !== 'string') throw new Error('heroId 不為 string');
+
     const response = await this.get('/heroes/' + heroId);
     if (response.status === 404) throw new ApiError('not_found', 'Not Found', 404);
     if (response.status !== 200) throw new Error('SingleHero 回傳status不為 200');
@@ -42,7 +43,10 @@ class HahowApi extends BaseApi {
   async ListHeroes () {
     const response = await this.get('/heroes');
     if (response.status !== 200) throw new Error('ListHeroes 回傳status不為 200');
-    if (!Array.isArray(response.data) || response.data.some((v) => !v || typeof (v.id) !== 'string')) throw new Error('ListHeroes 回傳資料格式錯誤');
+    if (
+      !Array.isArray(response.data)
+      || response.data.some((v) => !v || typeof (v.id) !== 'string')
+    ) throw new Error('ListHeroes 回傳資料格式錯誤');
 
     return response.data;
   }
@@ -62,6 +66,7 @@ class HahowApi extends BaseApi {
    */
   async ProfileOfHero (heroId) {
     if (!heroId || typeof (heroId) !== 'string') throw new Error('heroId 不為 string');
+
     const response = await this.get('/heroes/' + heroId + '/profile');
     if (response.status === 404) throw new ApiError('not_found', 'Not Found', 404);
     if (response.status !== 200) throw new Error('ProfileOfHero 回傳status不為 200');
@@ -79,6 +84,7 @@ class HahowApi extends BaseApi {
   async Authenticate (name, password) {
     if (!name || typeof (name) !== 'string') throw new Error('name 不為 string');
     if (!password || typeof (password) !== 'string') throw new Error('password 不為 string');
+
     const response = await this.post('/auth', { name, password });
     if (response.status === 401) throw new ApiError('unauthorized', 'Unauthorized', 401);
     if (response.status !== 200) throw new Error('Authenticate 回傳status不為 200');
@@ -100,7 +106,9 @@ class HahowApi extends BaseApi {
   async get (path, params, retryCnt = 5) {
     const response = await this.callApi('get', path, params, null);
     if (response.data?.code === 1000) {
-      // 當出現 "Backend Error" 時，若還有retryCnt則重試
+      // 當出現 "Backend Error"
+      //  retryCnt > 0 => 重試
+      //  retryCnt <= 0 => Throw error
       if (retryCnt <= 0) throw new Error('Backend Error');
       return this.get(path, params, retryCnt - 1);
     }
@@ -118,10 +126,13 @@ class HahowApi extends BaseApi {
   async post (path, data, retryCnt = 5) {
     const response = await this.callApi('post', path, null, data);
     if (response.data?.code === 1000) {
-      // 當出現 "Backend Error" 時，若還有retryCnt則重試
+      // 當出現 "Backend Error"
+      //  retryCnt > 0 => 重試
+      //  retryCnt <= 0 => Throw error
       if (retryCnt <= 0) throw new Error('Backend Error');
       return this.post(path, data, retryCnt - 1);
     }
+
     return response;
   }
 }

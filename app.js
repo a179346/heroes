@@ -22,19 +22,23 @@ app.use('/heroes', heroesRouter);
 // 成功訊息統一在這邊回覆 (可以在這邊加log系統，紀錄"request","response"及"呼叫外部API的log")
 // 例如: 將log傳到ELK
 app.use((req, res, next) => {
-  if (res.apiResponse instanceof ApiResponse) {
-    const responseStatus = res.apiResponse.status;
-    const responseData = res.apiResponse.data;
-    if (res.headersSent) return;
-    res.status(responseStatus)
-      .json(responseData);
-  } else
-    next(new ApiError('path_not_found', 'Path Not Found', 404));
+  if (res.headersSent) return;
+
+  const apiResponse = res.apiResponse;
+  if (!(apiResponse instanceof ApiResponse))
+    return next(new ApiError('path_not_found', 'Path Not Found', 404));
+
+  const responseStatus = res.apiResponse.status;
+  const responseData = res.apiResponse.data;
+  res.status(responseStatus)
+    .json(responseData);
 });
 
 // 錯誤訊息統一在這邊回覆 (可以在這邊加log系統，紀錄"request","response","error stack"及"呼叫外部API的log")
 // 例如: 將log傳到ELK
 app.use((err, req, res, next) => {
+  if (res.headersSent) return;
+
   let responseStatus = DEFAULT_STATUS;
   const responseData = {
     code: DEFAULT_CODE,
@@ -50,7 +54,6 @@ app.use((err, req, res, next) => {
   if (env.LOG_ERROR_STACK === '1')
     responseData.stack = err?.stack;
 
-  if (res.headersSent) return;
   res.status(responseStatus)
     .json(responseData);
 });
