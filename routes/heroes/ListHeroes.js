@@ -9,10 +9,18 @@ router.get('/', async function (req, res, next) {
     const heroes = await req.HahowApi.ListHeroes();
     if (req.hahowAuth) {
       // 當使用者驗證過身分後，須回傳hero profile
-      const tasks = [];
-      for (const hero of heroes)
+      let tasks = [];
+      for (const hero of heroes) {
         tasks.push(setHeroProfile(hero, req.HahowApi));
-      await Promise.all(tasks);
+        // 累積5個任務先做完，再做下面5個
+        if (tasks.length >= 5) {
+          await Promise.all(tasks);
+          tasks = [];
+        }
+      }
+      // 如果還有沒做完的任務，在這邊做完
+      if (tasks.length)
+        await Promise.all(tasks);
     }
 
     res.apiResponse = new ApiResponse(200, { heroes });
